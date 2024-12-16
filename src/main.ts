@@ -1,7 +1,7 @@
 import { CommitCreateEvent, Jetstream } from '@skyware/jetstream';
 import fs from 'node:fs';
 
-import { CURSOR_UPDATE_INTERVAL, DID, FIREHOSE_URL, HOST, METRICS_PORT, PORT, WANTED_COLLECTION } from './config.js';
+import { CURSOR_UPDATE_INTERVAL, DID, TARGET, FIREHOSE_URL, HOST, METRICS_PORT, PORT, WANTED_COLLECTION } from './config.js';
 import { label, labelerServer } from './label.js';
 import logger from './logger.js';
 import { startMetricsServer } from './metrics.js';
@@ -59,8 +59,15 @@ jetstream.on('error', (error) => {
 
 jetstream.onCreate(WANTED_COLLECTION, (event: CommitCreateEvent<typeof WANTED_COLLECTION>) => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (event.commit?.record?.subject?.uri?.includes(DID)) {
-    label(event.did, event.commit.record.subject.uri.split('/').pop()!);
+  if (event.commit?.record?.subject?.includes(TARGET)) {
+    label(event.did, event.commit.record.subject.did);
+  }
+});
+
+jetstream.onDelete(WANTED_COLLECTION, (event: CommitDeleteEvent<typeof WANTED_COLLECTION>) => {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (event.commit?.record?.subject?.includes(TARGET)) {
+    label(event.did, event.commit.record.subject.did);
   }
 });
 

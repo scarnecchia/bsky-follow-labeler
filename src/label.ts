@@ -7,20 +7,20 @@ import logger from './logger.js';
 
 export const labelerServer = new LabelerServer({ did: DID, signingKey: SIGNING_KEY });
 
-export const label = (did: string, rkey: string) => {
-  logger.info(`Received rkey: ${rkey} for ${did}`);
+export const label = (did: string, target: string) => {
+  logger.info(`Received subject: ${target} for ${did}`);
 
-  if (rkey === 'self') {
+  if (target === 'self') {
     logger.info(`${did} liked the labeler. Returning.`);
     return;
   }
   try {
     const labels = fetchCurrentLabels(did);
 
-    if (rkey.includes(DELETE)) {
+    if (target.includes(DELETE)) {
       deleteAllLabels(did, labels);
     } else {
-      addOrUpdateLabel(did, rkey, labels);
+      addOrUpdateLabel(did, target, labels);
     }
   } catch (error) {
     logger.error(`Error in \`label\` function: ${error}`);
@@ -61,10 +61,10 @@ function deleteAllLabels(did: string, labels: Set<string>) {
   }
 }
 
-function addOrUpdateLabel(did: string, rkey: string, labels: Set<string>) {
-  const newLabel = LABELS.find((label) => label.rkey === rkey);
+function addOrUpdateLabel(did: string, target: string, labels: Set<string>) {
+  const newLabel = LABELS.find((label) => label.target === target);
   if (!newLabel) {
-    logger.warn(`New label not found: ${rkey}. Likely liked a post that's not one for labels.`);
+    logger.warn(`New label not found: ${target}. Likely liked a post that's not one for labels.`);
     return;
   }
   logger.info(`New label: ${newLabel.identifier}`);
