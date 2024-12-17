@@ -2,25 +2,25 @@ import { ComAtprotoLabelDefs } from '@atcute/client/lexicons';
 import { LabelerServer } from '@skyware/labeler';
 
 import { DID, SIGNING_KEY } from './config.js';
-import { DELETE, LABELS, LABEL_LIMIT } from './constants.js';
+import { LABELS, LABEL_LIMIT } from './constants.js';
 import logger from './logger.js';
 
 export const labelerServer = new LabelerServer({ did: DID, signingKey: SIGNING_KEY });
 
-export const label = (did: string, target: string) => {
-  logger.info(`Received subject: ${target} for ${did}`);
+export const label = (did: string, rkey: string, negate:boolean) => {
+  logger.info(`Received subject: ${rkey} for ${did}`);
 
-  if (target === 'self') {
+  if (rkey === 'self') {
     logger.info(`${did} liked the labeler. Returning.`);
     return;
   }
   try {
     const labels = fetchCurrentLabels(did);
 
-    if (target.includes(DELETE)) {
+    if (negate) {
       deleteAllLabels(did, labels);
     } else {
-      addOrUpdateLabel(did, target, labels);
+      addOrUpdateLabel(did, rkey, labels);
     }
   } catch (error) {
     logger.error(`Error in \`label\` function: ${error}`);
@@ -61,10 +61,10 @@ function deleteAllLabels(did: string, labels: Set<string>) {
   }
 }
 
-function addOrUpdateLabel(did: string, target: string, labels: Set<string>) {
-  const newLabel = LABELS.find((label) => label.target === target);
+function addOrUpdateLabel(did: string, rkey: string, labels: Set<string>) {
+  const newLabel = LABELS.find((label) => label.rkey === rkey);
   if (!newLabel) {
-    logger.warn(`New label not found: ${target}. Likely liked a post that's not one for labels.`);
+    logger.warn(`New label not found: ${rkey}. Likely liked a post that's not one for labels.`);
     return;
   }
   logger.info(`New label: ${newLabel.identifier}`);

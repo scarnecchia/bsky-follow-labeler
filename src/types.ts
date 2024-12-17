@@ -1,7 +1,8 @@
 import { LabelValueDefinitionStrings } from '@atproto/api/dist/client/types/com/atproto/label/defs.js';
 
 export interface Label {
-  target: string;
+  rkey: string;
   identifier: string;
+  negate?: boolean;
   locales: LabelValueDefinitionStrings[];
 }

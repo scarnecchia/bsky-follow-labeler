@@ -59,15 +59,15 @@ jetstream.on('error', (error) => {
 
 jetstream.onCreate(WANTED_COLLECTION, (event: CommitCreateEvent<typeof WANTED_COLLECTION>) => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (event.commit?.record?.subject?.includes(TARGET)) {
-    label(event.did, event.commit.record.subject.did);
+  if (event.commit?.record?.subject === TARGET) {
+    label(event.did, event.commit.record.subject!);
   }
 });
 
-jetstream.onDelete(WANTED_COLLECTION, (event: CommitDeleteEvent<typeof WANTED_COLLECTION>) => {
+export const DELETE = jetstream.onDelete(WANTED_COLLECTION, (event: CommitDeleteEvent<typeof WANTED_COLLECTION>) => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (event.commit?.record?.subject?.includes(TARGET)) {
-    label(event.did, event.commit.record.subject.did);
+  if (event.commit?.record?.subject === TARGET) {
+    label(event.did, event.commit.record.subject!, true);
   }
 });
 
