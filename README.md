@@ -70,6 +70,12 @@ Start the project with `bun run start`.
 
 You can check that the labeler is reachable by checking the `/xrpc/com.atproto.label.queryLabels` endpoint of your labeler's server. A new, empty labeler returns `{"cursor":"0","labels":[]}`.
 
+## Backfilling
+
+The easiest way to backfill for followers prior to start-time is to use `src/backfill.ts`. To do this, first update line 26 of that file with a label value, and line 48 with a list of dids as a text file (one per line).
+
+After configurating the labeler per instructions above and running `bunx @skyware/labeler setup`, change line 7 of `package.json` to `"start": "npx tsx src/backfill.ts"` and run `bun run start` to generate `labels.db`. Then revert package.json to the original `"start": "npx tsx src/main.ts` and start the labeler again.
+
 ## Credits
 
 - [alice](https://bsky.app/profile/did:plc:by3jhwdqgbtrcc7q4tkkv3cf), creator of the [Zodiac Sign Labels](https://github.com/aliceisjustplaying/zodiacsigns)

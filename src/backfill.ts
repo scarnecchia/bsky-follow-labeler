@@ -23,7 +23,7 @@ function processLine(line: string) {
   const did = line.trim();
 
   try {
-    labelerServer.createLabel({ uri: did, val: 'jesse-singal-follower' });
+    labelerServer.createLabel({ uri: did, val: '<label-value-here>' });
     logger.info(`Successfully labeled ${did}`);
   } catch (error) {
     logger.error(`Error adding new label: ${error}`);
@@ -45,5 +45,5 @@ async function readFileLineByLine(filePath: string) {
 }
 
 // Call the function with the path to your file
-const filePath = '/Users/scarndp/dev/follow_tracker/singal.txt';
+const filePath = '<path-to-your-file>';
 readFileLineByLine(filePath).catch((err) => console.error(err));
