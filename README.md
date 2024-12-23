@@ -1,8 +1,10 @@
-# Bluesky Labeler Starter Kit
+# Bluesky Follows Labeler
 
-Use this repository to get started with your own Bluesky Labeler. Click the "Use this template" button above to create a new repository, and then follow the instructions below.
+Use this repository to get started with a labeler that applies badges based on whether an account follows another account. You can edit the labels, descriptions, and other parameters in the `src/constants.ts` file.
 
-As an example, this repository includes a labeler for setting your favorite of the five elements (Earth, Fire, Air, Water, Love) to your profile. You can edit the labels, descriptions, and other parameters in the `src/constants.ts` file.
+Based on the [Labeler Starter Kit](https://github.com/aliceisjustplaying/labeler-starter-kit-bsky) from Alice.
+
+Currently will only work with one target. Someone who knows their way around TypeScript better than me can probably make some simple changes to allow it to label followers for multiple accounts.
 
 **This project requires familiarity with TypeScript, the command line and Linux. I hope to improve the onboarding experience in the future.**
 
@@ -28,6 +30,7 @@ Copy the `.env.example` file to `.env` and fill in the values:
 
 ```Dotenv
 DID=did:plc:xxx
+TARGET=did:plc:xxx
 SIGNING_KEY=xxx
 BSKY_IDENTIFIER=xxx
 BSKY_PASSWORD=xxx
@@ -66,6 +69,12 @@ Metrics are exposed on the defined `METRICS_PORT` for [Prometheus](https://prome
 Start the project with `bun run start`.
 
 You can check that the labeler is reachable by checking the `/xrpc/com.atproto.label.queryLabels` endpoint of your labeler's server. A new, empty labeler returns `{"cursor":"0","labels":[]}`.
+
+## Backfilling
+
+The easiest way to backfill for followers prior to start-time is to use `src/backfill.ts`. To do this, first update line 26 of that file with a label value, and line 48 with a list of dids as a text file (one per line).
+
+After configurating the labeler per instructions above and running `bunx @skyware/labeler setup`, change line 7 of `package.json` to `"start": "npx tsx src/backfill.ts"` and run `bun run start` to generate `labels.db`. Then revert package.json to the original `"start": "npx tsx src/main.ts` and start the labeler again.
 
 ## Credits
 
