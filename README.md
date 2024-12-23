@@ -1,8 +1,10 @@
-# Bluesky Labeler Starter Kit
+# Bluesky Follows Labeler
 
-Use this repository to get started with your own Bluesky Labeler. Click the "Use this template" button above to create a new repository, and then follow the instructions below.
+Use this repository to get started with a labeler that applies badges based on whether an account follows another account. You can edit the labels, descriptions, and other parameters in the `src/constants.ts` file.
 
-As an example, this repository includes a labeler for setting your favorite of the five elements (Earth, Fire, Air, Water, Love) to your profile. You can edit the labels, descriptions, and other parameters in the `src/constants.ts` file.
+Based on the [Labeler Starter Kit](https://github.com/aliceisjustplaying/labeler-starter-kit-bsky) from Alice.
+
+Currently will only work with one target. Someone who knows their way around TypeScript better than me can probably make some simple changes to allow it to label followers for multiple accounts.
 
 **This project requires familiarity with TypeScript, the command line and Linux. I hope to improve the onboarding experience in the future.**
 
@@ -28,6 +30,7 @@ Copy the `.env.example` file to `.env` and fill in the values:
 
 ```Dotenv
 DID=did:plc:xxx
+TARGET=did:plc:xxx
 SIGNING_KEY=xxx
 BSKY_IDENTIFIER=xxx
 BSKY_PASSWORD=xxx
