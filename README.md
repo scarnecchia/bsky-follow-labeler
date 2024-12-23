@@ -10,7 +10,7 @@ Currently will only work with one target. Someone who knows their way around Typ
 
 ## Support My Work
 
-If you find this project helpful, please consider supporting my work:
+If you find this project helpful, please consider supporting Alice, whose template made this possible:
 
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logocolor=white)](https://ko-fi.com/aliceisjustplaying)
 [![GitHub Sponsors](https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#white)](https://github.com/sponsors/aliceisjustplaying)
