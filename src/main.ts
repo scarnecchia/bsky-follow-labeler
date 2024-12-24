@@ -57,18 +57,22 @@ jetstream.on('error', (error) => {
   logger.error(`Jetstream error: ${error.message}`);
 });
 
-jetstream.onCreate(WANTED_COLLECTION, (event: CommitCreateEvent<typeof WANTED_COLLECTION>) => {
+const handleEvent = (
+  event: CommitCreateEvent<typeof WANTED_COLLECTION> | CommitDeleteEvent<typeof WANTED_COLLECTION>,
+  isDelete: boolean,
+) => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (event.commit?.record?.subject === TARGET) {
-    label(event.did, event.commit.record.subject!);
+    label(event.did, event.commit.record.subject!, isDelete);
   }
+};
+
+jetstream.onCreate(WANTED_COLLECTION, (event: CommitCreateEvent<typeof WANTED_COLLECTION>) => {
+  handleEvent(event, false);
 });
 
-export const DELETE = jetstream.onDelete(WANTED_COLLECTION, (event: CommitDeleteEvent<typeof WANTED_COLLECTION>) => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (event.commit?.record?.subject === TARGET) {
-    label(event.did, event.commit.record.subject!, true);
-  }
+jetstream.onDelete(WANTED_COLLECTION, (event: CommitDeleteEvent<typeof WANTED_COLLECTION>) => {
+  handleEvent(event, true);
 });
 
 const metricsServer = startMetricsServer(METRICS_PORT);

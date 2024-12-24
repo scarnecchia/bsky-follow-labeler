@@ -6,8 +6,6 @@ Based on the [Labeler Starter Kit](https://github.com/aliceisjustplaying/labeler
 
 Currently will only work with one target. Someone who knows their way around TypeScript better than me can probably make some simple changes to allow it to label followers for multiple accounts.
 
-**This project requires familiarity with TypeScript, the command line and Linux. I hope to improve the onboarding experience in the future.**
-
 ## Support My Work
 
 If you find this project helpful, please consider supporting Alice, whose template made this possible:
@@ -75,6 +73,10 @@ You can check that the labeler is reachable by checking the `/xrpc/com.atproto.l
 The easiest way to backfill for followers prior to start-time is to use `src/backfill.ts`. To do this, first update line 26 of that file with a label value, and line 48 with a list of dids as a text file (one per line).
 
 After configurating the labeler per instructions above and running `bunx @skyware/labeler setup`, change line 7 of `package.json` to `"start": "npx tsx src/backfill.ts"` and run `bun run start` to generate `labels.db`. Then revert package.json to the original `"start": "npx tsx src/main.ts` and start the labeler again.
+
+## Negation
+
+In the event that unfollowing does not result in the label being removed, `src/negate.ts` can be used to remove a label. Provide a file dids.txt in your root folder with one did per line. Then modify line 14 of `src/negate.ts` to replace `<insert-label>` with an actual label. Finally run `bun run negate`.
 
 ## Credits
 
