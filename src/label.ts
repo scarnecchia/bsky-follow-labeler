@@ -2,13 +2,13 @@ import { ComAtprotoLabelDefs } from '@atcute/client/lexicons';
 import { LabelerServer } from '@skyware/labeler';
 
 import { DID, SIGNING_KEY } from './config.js';
-import { LABELS, LABEL_LIMIT } from './constants.js';
+import { LABELS } from './constants.js';
 import logger from './logger.js';
 
 export const labelerServer = new LabelerServer({ did: DID, signingKey: SIGNING_KEY });
 
-export const label = (did: string, rkey: string, negate:boolean) => {
-  logger.info(`Received subject: ${rkey} for ${did}`);
+export const label = (did: string, rkey: string, negate: boolean) => {
+  logger.info(`Received subject: ${did} with rkey: ${rkey} and negate: ${negate}`);
 
   if (rkey === 'self') {
     logger.info(`${did} liked the labeler. Returning.`);
@@ -68,15 +68,6 @@ function addOrUpdateLabel(did: string, rkey: string, labels: Set<string>) {
     return;
   }
   logger.info(`New label: ${newLabel.identifier}`);
-
-  if (labels.size >= LABEL_LIMIT) {
-    try {
-      labelerServer.createLabels({ uri: did }, { negate: Array.from(labels) });
-      logger.info(`Successfully negated existing labels: ${Array.from(labels).join(', ')}`);
-    } catch (error) {
-      logger.error(`Error negating existing labels: ${error}`);
-    }
-  }
 
   try {
     labelerServer.createLabel({ uri: did, val: newLabel.identifier });

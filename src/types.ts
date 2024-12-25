@@ -6,3 +6,9 @@ export interface Label {
   negate?: boolean;
   locales: LabelValueDefinitionStrings[];
 }
+
+export interface Labeled {
+  did: string;
+  subject: string;
+  rkey: string;
+}

@@ -1,10 +1,11 @@
-import { CommitCreateEvent, Jetstream } from '@skyware/jetstream';
+import { CommitCreateEvent, CommitDeleteEvent, Jetstream } from '@skyware/jetstream';
 import fs from 'node:fs';
 
 import { CURSOR_UPDATE_INTERVAL, FIREHOSE_URL, HOST, METRICS_PORT, PORT, TARGET, WANTED_COLLECTION } from './config.js';
 import { label, labelerServer } from './label.js';
 import logger from './logger.js';
 import { startMetricsServer } from './metrics.js';
+import { labeledAccount } from './store.js';
 
 let cursor = 0;
 let cursorUpdateInterval: NodeJS.Timeout;
@@ -57,22 +58,31 @@ jetstream.on('error', (error) => {
   logger.error(`Jetstream error: ${error.message}`);
 });
 
-const handleEvent = (
-  event: CommitCreateEvent<typeof WANTED_COLLECTION> | CommitDeleteEvent<typeof WANTED_COLLECTION>,
-  isDelete: boolean,
-) => {
+jetstream.onCreate(WANTED_COLLECTION, (event: CommitCreateEvent<typeof WANTED_COLLECTION>) => {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (event.commit?.record?.subject === TARGET) {
-    label(event.did, event.commit.record.subject!, isDelete);
+    label(event.did, event.commit.record.subject!, false);
+    labeledAccount(event.did, event.commit.record.subject!, event.commit.rkey!, false);
   }
-};
-
-jetstream.onCreate(WANTED_COLLECTION, (event: CommitCreateEvent<typeof WANTED_COLLECTION>) => {
-  handleEvent(event, false);
 });
 
 jetstream.onDelete(WANTED_COLLECTION, (event: CommitDeleteEvent<typeof WANTED_COLLECTION>) => {
-  handleEvent(event, true);
+  if (fs.existsSync('labeled.json')) {
+    const fileContent = fs.readFileSync('labeled.json', 'utf8');
+    if (fileContent.trim()) {
+      // Check if the file is not blank
+      try {
+        const labeled: Labeled[] = JSON.parse(fileContent);
+        const matchingRecord = labeled.find((record) => record.did === event.did && record.rkey === event.commit.rkey);
+        if (matchingRecord) {
+          label(event.did, matchingRecord.subject!, true);
+          labeledAccount(event.did, matchingRecord.subject!, event.commit.rkey!, true);
+        }
+      } catch (err) {
+        console.error('Error parsing JSON file:', err);
+      }
+    }
+  }
 });
 
 const metricsServer = startMetricsServer(METRICS_PORT);
